@@ -49,7 +49,17 @@ async function ensureStore() {
 async function readTodos() {
   await ensureStore();
   const rawTodos = await fs.readFile(DATA_FILE, "utf8");
-  return JSON.parse(rawTodos);
+  const todos = JSON.parse(rawTodos);
+  const normalizedTodos = todos.map((todo) => ({
+    ...todo,
+    dueDate: typeof todo.dueDate === "string" ? todo.dueDate : ""
+  }));
+
+  if (JSON.stringify(todos) !== JSON.stringify(normalizedTodos)) {
+    await writeTodos(normalizedTodos);
+  }
+
+  return normalizedTodos;
 }
 
 async function writeTodos(todos) {
@@ -74,7 +84,9 @@ function cleanTodoInput(body, existingTodo = {}) {
   const priority = ["low", "medium", "high"].includes(body.priority) ? body.priority : existingTodo.priority || "medium";
   const cleanDueDate = typeof body.dueDate === "string" ? body.dueDate.trim() : null;
   const dueDate =
-    cleanDueDate === "" || /^\d{4}-\d{2}-\d{2}$/.test(cleanDueDate) ? cleanDueDate : existingTodo.dueDate || "";
+    cleanDueDate !== null && (cleanDueDate === "" || /^\d{4}-\d{2}-\d{2}$/.test(cleanDueDate))
+      ? cleanDueDate
+      : existingTodo.dueDate || "";
   const completed = typeof body.completed === "boolean" ? body.completed : Boolean(existingTodo.completed);
 
   return { title, notes, category: category || "General", priority, dueDate, completed };

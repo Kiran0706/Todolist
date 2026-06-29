@@ -65,6 +65,14 @@ function App() {
 
   useEffect(() => {
     loadTodos();
+
+    window.addEventListener("focus", loadTodos);
+    window.addEventListener("pageshow", loadTodos);
+
+    return () => {
+      window.removeEventListener("focus", loadTodos);
+      window.removeEventListener("pageshow", loadTodos);
+    };
   }, []);
 
   async function loadTodos() {
