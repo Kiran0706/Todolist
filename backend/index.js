@@ -24,6 +24,7 @@ async function ensureStore() {
         notes: "Pick the three tasks that would make today feel clean and intentional.",
         category: "Focus",
         priority: "high",
+        dueDate: "",
         completed: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -34,6 +35,7 @@ async function ensureStore() {
         notes: "Clear cups, close loose tabs, and leave one useful note for future-you.",
         category: "Ritual",
         priority: "medium",
+        dueDate: "",
         completed: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -70,9 +72,12 @@ function cleanTodoInput(body, existingTodo = {}) {
   const notes = typeof body.notes === "string" ? body.notes.trim() : existingTodo.notes || "";
   const category = typeof body.category === "string" ? body.category.trim() : existingTodo.category || "General";
   const priority = ["low", "medium", "high"].includes(body.priority) ? body.priority : existingTodo.priority || "medium";
+  const cleanDueDate = typeof body.dueDate === "string" ? body.dueDate.trim() : null;
+  const dueDate =
+    cleanDueDate === "" || /^\d{4}-\d{2}-\d{2}$/.test(cleanDueDate) ? cleanDueDate : existingTodo.dueDate || "";
   const completed = typeof body.completed === "boolean" ? body.completed : Boolean(existingTodo.completed);
 
-  return { title, notes, category: category || "General", priority, completed };
+  return { title, notes, category: category || "General", priority, dueDate, completed };
 }
 
 app.get("/api/health", (req, res) => {

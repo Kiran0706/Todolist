@@ -110,6 +110,14 @@ function App() {
               </select>
             </label>
           </div>
+          <label>
+            Due date
+            <input
+              value={todo.dueDate || ""}
+              onChange={(event) => updateField("dueDate", event.target.value)}
+              type="date"
+            />
+          </label>
           <label className="toggle-row">
             <input
               checked={todo.completed}

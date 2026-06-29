@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { ArrowUpRight, Check, Circle, Plus, Search, Sparkles, Trash2 } from "lucide-react";
+import { ArrowUpRight, CalendarDays, Check, Circle, Plus, Search, Sparkles, Trash2 } from "lucide-react";
 import { createTodo, deleteTodo, getTodos, updateTodo } from "./api";
 import "./styles.css";
 
@@ -9,13 +9,56 @@ const blankTodo = {
   notes: "",
   category: "Focus",
   priority: "medium",
+  dueDate: "",
   completed: false
 };
+
+const priorityWeight = {
+  high: 3,
+  medium: 2,
+  low: 1
+};
+
+function getDateValue(date) {
+  return date ? new Date(`${date}T00:00:00`).getTime() : Number.MAX_SAFE_INTEGER;
+}
+
+function formatDueDate(date) {
+  if (!date) {
+    return "No due date";
+  }
+
+  return new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric"
+  });
+}
+
+function getDueStatus(todo) {
+  if (!todo.dueDate) {
+    return "none";
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(`${todo.dueDate}T00:00:00`);
+
+  if (!todo.completed && due < today) {
+    return "overdue";
+  }
+
+  if (due.getTime() === today.getTime()) {
+    return "today";
+  }
+
+  return "upcoming";
+}
 
 function App() {
   const [todos, setTodos] = useState([]);
   const [form, setForm] = useState(blankTodo);
   const [filter, setFilter] = useState("all");
+  const [sort, setSort] = useState("newest");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("loading");
   const [error, setError] = useState("");
@@ -77,14 +120,30 @@ function App() {
     }
   }
 
-  const filteredTodos = useMemo(() => {
-    return todos.filter((todo) => {
+  const visibleTodos = useMemo(() => {
+    const filtered = todos.filter((todo) => {
       const matchesStatus =
         filter === "all" || (filter === "active" && !todo.completed) || (filter === "done" && todo.completed);
-      const searchText = `${todo.title} ${todo.notes} ${todo.category}`.toLowerCase();
+      const searchText = `${todo.title} ${todo.notes} ${todo.category} ${todo.dueDate || ""}`.toLowerCase();
       return matchesStatus && searchText.includes(query.toLowerCase());
     });
-  }, [filter, query, todos]);
+
+    return [...filtered].sort((firstTodo, secondTodo) => {
+      if (sort === "due") {
+        return getDateValue(firstTodo.dueDate) - getDateValue(secondTodo.dueDate);
+      }
+
+      if (sort === "priority") {
+        return (priorityWeight[secondTodo.priority] || 0) - (priorityWeight[firstTodo.priority] || 0);
+      }
+
+      if (sort === "completed") {
+        return Number(firstTodo.completed) - Number(secondTodo.completed);
+      }
+
+      return new Date(secondTodo.createdAt).getTime() - new Date(firstTodo.createdAt).getTime();
+    });
+  }, [filter, query, sort, todos]);
 
   const stats = useMemo(() => {
     const done = todos.filter((todo) => todo.completed).length;
@@ -162,6 +221,14 @@ function App() {
               </select>
             </label>
           </div>
+          <label>
+            Due date
+            <input
+              value={form.dueDate}
+              onChange={(event) => setForm({ ...form, dueDate: event.target.value })}
+              type="date"
+            />
+          </label>
           {error ? <p className="error-note">{error}</p> : null}
           <button className="primary-button" type="submit">
             <Plus size={18} aria-hidden="true" />
@@ -187,14 +254,23 @@ function App() {
                 </button>
               ))}
             </div>
+            <label className="sort-box">
+              Sort
+              <select value={sort} onChange={(event) => setSort(event.target.value)}>
+                <option value="newest">Newest</option>
+                <option value="due">Due date</option>
+                <option value="priority">Priority</option>
+                <option value="completed">Active first</option>
+              </select>
+            </label>
           </div>
 
           {status === "loading" ? <p className="quiet-state">Loading your list...</p> : null}
           {status === "error" ? <p className="quiet-state">Start the backend, then refresh this page.</p> : null}
-          {status === "ready" && filteredTodos.length === 0 ? <p className="quiet-state">No tasks match this view.</p> : null}
+          {status === "ready" && visibleTodos.length === 0 ? <p className="quiet-state">No tasks match this view.</p> : null}
 
           <div className="todo-list">
-            {filteredTodos.map((todo) => (
+            {visibleTodos.map((todo) => (
               <article className={`todo-card ${todo.completed ? "completed" : ""}`} key={todo.id}>
                 <button
                   className="check-button"
@@ -210,7 +286,13 @@ function App() {
                     <span className={`priority ${todo.priority}`}>{todo.priority}</span>
                   </div>
                   <p>{todo.notes || "No notes yet."}</p>
-                  <span className="category">{todo.category}</span>
+                  <div className="todo-meta">
+                    <span className="category">{todo.category}</span>
+                    <span className={`due-badge ${getDueStatus(todo)}`}>
+                      <CalendarDays size={14} aria-hidden="true" />
+                      {formatDueDate(todo.dueDate)}
+                    </span>
+                  </div>
                 </div>
                 <a className="icon-link" href={`/todo.html?id=${todo.id}`} aria-label={`Open ${todo.title}`}>
                   <ArrowUpRight size={18} aria-hidden="true" />
