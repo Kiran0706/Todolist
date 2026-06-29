@@ -545,12 +545,14 @@ textarea:focus {
   gap: 10px;
   align-items: center;
   justify-content: space-between;
+  min-width: 0;
 }
 
 .todo-line h3 {
   margin: 0;
   font-size: 0.98rem;
   line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .todo-main p {
@@ -581,6 +583,7 @@ textarea:focus {
 
 .priority {
   padding: 0 10px;
+  flex: 0 0 auto;
   text-transform: capitalize;
 }
 
@@ -674,6 +677,10 @@ textarea:focus {
 .progress-ring {
   position: relative;
   display: grid;
+  grid-template-rows: auto auto;
+  align-content: center;
+  justify-items: center;
+  row-gap: 2px;
   place-items: center;
   width: 116px;
   height: 116px;
@@ -699,12 +706,19 @@ textarea:focus {
 
 .progress-ring strong {
   font-size: 1.35rem;
+  line-height: 1;
 }
 
 .progress-ring span,
 .focus-panel p {
   color: #6f7894;
   font-size: 0.82rem;
+}
+
+.progress-ring span {
+  max-width: 68px;
+  line-height: 1.15;
+  text-align: center;
 }
 
 .category-chart {
