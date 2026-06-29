@@ -1,12 +1,35 @@
 [
   {
-    "id": "to-assignment-mqy2o2jy",
-    "title": "to Assignment",
-    "notes": "java assignment",
+    "id": "er-mqz5hped",
+    "title": "er",
+    "notes": "ghjk",
     "category": "Focus",
     "priority": "medium",
     "completed": true,
-    "createdAt": "2026-06-28T17:38:03.117Z",
-    "updatedAt": "2026-06-28T17:38:07.610Z"
+    "createdAt": "2026-06-29T11:44:51.157Z",
+    "updatedAt": "2026-06-29T12:25:48.964Z",
+    "dueDate": ""
+  },
+  {
+    "id": "exam-mqz5fhri",
+    "title": "Exam",
+    "notes": "cdc exam",
+    "category": "Focus",
+    "priority": "medium",
+    "completed": true,
+    "createdAt": "2026-06-29T11:43:07.948Z",
+    "updatedAt": "2026-06-29T12:25:51.184Z",
+    "dueDate": ""
+  },
+  {
+    "id": "assignment-mqz509gu",
+    "title": "Assignment",
+    "notes": "Write DBA Assignment",
+    "category": "Focus",
+    "priority": "high",
+    "completed": true,
+    "createdAt": "2026-06-29T11:31:17.357Z",
+    "updatedAt": "2026-06-29T11:43:43.216Z",
+    "dueDate": ""
   }
 ]
