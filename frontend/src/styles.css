@@ -115,6 +115,7 @@ h1 {
   display: grid;
   grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
   gap: 18px;
+  align-items: stretch;
   margin-top: 18px;
 }
 
@@ -129,7 +130,7 @@ h1 {
 }
 
 .composer {
-  align-self: start;
+  min-height: 520px;
   padding: 22px;
 }
 
