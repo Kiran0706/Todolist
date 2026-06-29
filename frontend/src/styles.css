@@ -289,13 +289,28 @@ textarea:focus {
 }
 
 .sort-box {
-  gap: 4px;
+  position: relative;
+  display: block;
   font-size: 0.72rem;
   text-transform: uppercase;
 }
 
+.sort-box::before {
+  content: "Sort";
+  position: absolute;
+  top: 7px;
+  left: 13px;
+  z-index: 1;
+  color: #4e5656;
+  font-size: 0.66rem;
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+}
+
 .sort-box select {
   min-height: 48px;
+  padding-top: 14px;
   background: #fffdfa;
   font-size: 0.9rem;
   font-weight: 800;
